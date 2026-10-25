@@ -1,9 +1,9 @@
 /**
  * popup/popup-triage.js
  *
- * Renders the triage action center in the popup. Displays up to 5 jobs
- * that need immediate attention (follow-ups, interviews, offers) and
- * a summary strip with counts.
+ * Renders the triage action center in the popup. Lists up to 5 jobs
+ * that need immediate attention (follow-ups, interviews, offers) under
+ * a one-line summary of what today looks like.
  *
  * Dependencies: storage-crud.js (window.JobStorage)
  */
@@ -42,18 +42,21 @@ async function renderTriageCenter() {
 
   jobs.forEach(job => {
     const daysOld = Math.floor((Date.now() - job.appliedAt) / (1000 * 60 * 60 * 24));
+    job.daysOld = daysOld;
 
     // Auto-promote "Applied" jobs older than 7 days to "Follow-up" status
     job.calculatedStatus = (job.status === 'Applied' && daysOld >= 7) ? 'Follow-up' : job.status;
 
     if (job.calculatedStatus === 'Follow-up') {
       followUpCount++;
-      job.intentClass = 'dot-urgent';
+      job.intentClass = 'intent-urgent';
+      job.intentLabel = 'Chase';
       job.intentWeight = 3;
       actionRequired.push(job);
     } else if (job.calculatedStatus === 'Interview' || job.calculatedStatus === 'Offer') {
       prepCount++;
-      job.intentClass = job.calculatedStatus === 'Offer' ? 'dot-win' : 'dot-prep';
+      job.intentClass = job.calculatedStatus === 'Offer' ? 'intent-win' : 'intent-prep';
+      job.intentLabel = job.calculatedStatus === 'Offer' ? 'Offer' : 'Prep';
       job.intentWeight = 2;
       actionRequired.push(job);
     }
@@ -64,22 +67,27 @@ async function renderTriageCenter() {
     b.intentWeight !== a.intentWeight ? b.intentWeight - a.intentWeight : a.appliedAt - b.appliedAt
   );
 
-  // Build summary text
+  // Build summary sentence, e.g. "2 to chase, 1 to prep for."
   const parts = [];
-  if (followUpCount > 0) parts.push(`${followUpCount} Follow-ups`);
-  if (prepCount > 0) parts.push(`${prepCount} Interviews/Offers`);
-  summaryText.textContent = parts.length > 0 ? parts.join(' \u2022 ') : 'Pipeline Active \u2022 No urgent actions';
+  if (followUpCount > 0) parts.push(`<b>${followUpCount}</b> to chase`);
+  if (prepCount > 0) parts.push(`${prepCount} to prep for`);
+  summaryText.innerHTML = parts.length > 0
+    ? `${parts.join(', ')}.`
+    : jobs.length > 0 ? 'Nothing needs you today.' : 'No jobs logged yet.';
 
   triageList.innerHTML = '';
 
   // Show empty state if nothing needs attention
   if (actionRequired.length === 0) {
-    triageList.innerHTML = `
-      <div class="zero-state">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        <div>You're all caught up!</div>
-      </div>
-    `;
+    triageList.innerHTML = jobs.length > 0
+      ? `<li class="zero-state">
+          <div class="zero-state-title">No follow-ups due.</div>
+          <div class="zero-state-body">Applications move here once they've sat for a week, or when you mark an interview or offer.</div>
+        </li>`
+      : `<li class="zero-state">
+          <div class="zero-state-title">Your log is empty.</div>
+          <div class="zero-state-body">Hit Apply on LinkedIn, Indeed or Naukri and the job lands here on its own.</div>
+        </li>`;
     return;
   }
 
@@ -88,18 +96,16 @@ async function renderTriageCenter() {
     const cleanCompany = sanitizeCompanyName(job.company);
     const safeTitle = (job.jobTitle === 'Indeed' || job.jobTitle === 'Naukri') ? 'Unknown Role' : job.jobTitle;
 
-    const card = document.createElement('div');
+    const card = document.createElement('li');
     card.className = 'triage-card';
 
     card.innerHTML = `
-      <div class="card-row">
+      <span class="intent-label ${job.intentClass}">${job.intentLabel}</span>
+      <div class="card-body">
         <h4 class="job-title" title="${safeTitle}">${safeTitle}</h4>
-        <div class="intent-dot ${job.intentClass}"></div>
+        <span class="company">${cleanCompany}${job.source ? ` \u00b7 ${job.source}` : ''}</span>
       </div>
-      <div class="card-row">
-        <span class="company">${cleanCompany}</span>
-        ${job.source ? `<span class="source-badge">${job.source}</span>` : ''}
-      </div>
+      <span class="card-age" title="Days since you applied">${job.daysOld}d</span>
     `;
 
     card.addEventListener('click', () => {
@@ -108,4 +114,11 @@ async function renderTriageCenter() {
 
     triageList.appendChild(card);
   });
+
+  if (actionRequired.length > 5) {
+    const more = document.createElement('li');
+    more.className = 'more-row';
+    more.textContent = `+ ${actionRequired.length - 5} more on the board`;
+    triageList.appendChild(more);
+  }
 }
