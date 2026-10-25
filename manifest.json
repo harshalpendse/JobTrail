@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "JobTrail",
   "version": "2.0.0",
-  "description": "Track jobs applied on LinkedIn, Indeed and Naukri with analytics",
+  "description": "Logs the jobs you apply to on LinkedIn, Indeed and Naukri, and reminds you when to follow up. Your data stays on your device.",
   "permissions": [
     "storage",
     "alarms",
