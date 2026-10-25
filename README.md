@@ -10,7 +10,7 @@ No more messy spreadsheets, and no more forgetting what salary you applied for.
 
 - **🪄 Auto-Tracking**: Automatically detects when you apply for a job on **LinkedIn, Indeed, or Naukri**.
 - **📋 Kanban Dashboard**: Manage your application pipeline with drag-and-drop columns (Applied, Follow-up, Interview, Offer, Ghosted, Rejected).
-- **📊 Analytics Engine**: Visualize your application velocity, response rates, and pipeline funnel using built-in HTML5 canvas charts.
+- **📊 Analytics Engine**: Visualize your application velocity, response rates, and pipeline funnel using built-in charts (no charting library).
 - **📱 Triage Center Popup**: A quick-access extension popup that highlights jobs needing immediate attention (like follow-ups and interviews).
 - **🤖 AI Context Generator**: A one-click button in the job details modal to generate a structured prompt loaded with the job description and your notes—ready to paste into ChatGPT/Claude for tailored cover letters and interview prep.
 - **🔒 100% Privacy-First & Local-Only**: 
@@ -21,11 +21,17 @@ No more messy spreadsheets, and no more forgetting what salary you applied for.
 
 ## 📸 Screenshots
 
+![The board: jobs sorted into Applied, Follow up, Interviewing, Offers, Ghosted and Rejected](docs/screenshots/board.png)
+
 <p align="center">
-  <img src="https://github.com/hrshl21/JobTrail/blob/main/screely-jobtrail-dashboard-20260419-201558%20(1).png?raw=true" alt="JobTrail Dashboard View" width="48%" />
+  <img src="docs/screenshots/job-detail.png" alt="Job detail with history, description and your notes" width="64%" />
   &nbsp;
-  <img src="https://github.com/hrshl21/JobTrail/blob/main/screely-jobtrail-dashboard-20260419-201814%20(1).png?raw=true" alt="JobTrail Analytics View" width="48%" />
+  <img src="docs/screenshots/popup.png" alt="Extension popup listing the jobs to chase today" width="30%" />
 </p>
+
+![Numbers view in dark mode: weekly applications, pipeline by stage and share by site](docs/screenshots/numbers-dark.png)
+
+<sub>Screenshots use sample data. The UI follows your system's light or dark setting.</sub>
 
 ## 🚀 Installation 
 
