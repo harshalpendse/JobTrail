@@ -35,21 +35,28 @@ function openModal(job) {
   document.getElementById('modal-title').textContent = job.jobTitle;
   document.getElementById('modal-company').textContent = sanitizeCompanyName(job.company);
   document.getElementById('modal-url').href = job.jobUrl;
-  document.getElementById('modal-description').innerHTML = job.description || '<i style="color:#94a3b8">No description saved.</i>';
+  document.getElementById('modal-description').innerHTML = job.description || '<p class="empty-note">No description was saved for this job.</p>';
 
   document.getElementById('modal-ctc').value = job.ctc || '';
   document.getElementById('modal-resume').value = job.resumeVersion || '';
   document.getElementById('modal-notes').value = job.notes || '';
 
-  // Meta tags (source, location, salary, etc.)
+  // Eyebrow: where it came from and when you applied
+  const eyebrow = document.getElementById('modal-eyebrow');
+  if (eyebrow) {
+    const applied = new Date(job.appliedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    eyebrow.textContent = `${job.source || 'Manual'} \u00b7 applied ${applied}`;
+  }
+
+  // Meta details (location, salary, etc.) as a label/value list
   const metaTags = document.getElementById('modal-meta-tags');
-  const tags = [];
-  if (job.source) tags.push(`<span class="meta-tag">${job.source}</span>`);
-  if (job.location) tags.push(`<span class="meta-tag">${job.location}</span>`);
-  if (job.salary) tags.push(`<span class="meta-tag">${job.salary}</span>`);
-  if (job.employmentType) tags.push(`<span class="meta-tag">${job.employmentType}</span>`);
-  if (job.experienceLevel) tags.push(`<span class="meta-tag">${job.experienceLevel}</span>`);
-  if (metaTags) metaTags.innerHTML = tags.join('');
+  const rows = [
+    ['Location', job.location],
+    ['Salary', job.salary],
+    ['Type', job.employmentType],
+    ['Level', job.experienceLevel]
+  ].filter(([, value]) => value);
+  if (metaTags) metaTags.innerHTML = rows.map(([label, value]) => `<dt>${label}</dt><dd>${value}</dd>`).join('');
 
   renderTimeline(job);
   document.getElementById('job-modal').classList.remove('hidden');
@@ -73,14 +80,10 @@ function renderTimeline(job) {
     const timeStr = date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
     const isLast = i === history.length - 1;
     return `
-      <div class="timeline-item ${isLast ? 'timeline-current' : ''}">
-        <div class="timeline-dot"></div>
-        ${!isLast ? '<div class="timeline-line"></div>' : ''}
-        <div class="timeline-content">
-          <span class="timeline-status">${entry.status}</span>
-          <span class="timeline-date">${dateStr} \u2022 ${timeStr}</span>
-        </div>
-      </div>
+      <li class="timeline-item ${isLast ? 'timeline-current' : ''}">
+        <span class="timeline-date">${dateStr}, ${timeStr}</span>
+        <span class="timeline-status">${entry.status}</span>
+      </li>
     `;
   }).join('');
 }
@@ -89,6 +92,9 @@ function initModalEvents() {
   document.getElementById('close-modal')?.addEventListener('click', closeModal);
   document.getElementById('job-modal')?.addEventListener('click', (e) => {
     if (e.target.id === 'job-modal') closeModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && window.DashboardState.currentJobId) closeModal();
   });
 
   // Save Notes
@@ -100,15 +106,12 @@ function initModalEvents() {
     const notes = document.getElementById('modal-notes')?.value || '';
     const resumeVersion = document.getElementById('modal-resume')?.value || '';
 
-    if (btn) { btn.textContent = 'Saving...'; btn.style.opacity = '0.7'; }
+    if (btn) btn.textContent = 'Saving\u2026';
     await window.JobStorage.update(currentJobId, { ctc, notes, resumeVersion });
 
     if (btn) {
-      btn.style.opacity = '1';
-      btn.innerHTML = `<span>Saved!</span>`;
-      setTimeout(() => {
-        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Updates`;
-      }, 2000);
+      btn.textContent = 'Saved';
+      setTimeout(() => { btn.textContent = 'Save notes'; }, 2000);
     }
     renderBoard();
   });
@@ -148,16 +151,11 @@ function initModalEvents() {
     try {
       await navigator.clipboard.writeText(promptText);
       const btn = document.getElementById('llm-copy-btn');
-      const originalText = btn.innerHTML;
-      btn.innerHTML = `<span>Copied to Clipboard</span>`;
-      btn.style.background = 'rgba(16, 185, 129, 0.15)';
-      btn.style.color = '#10b981';
-      btn.style.borderColor = '#10b981';
+      btn.textContent = 'Copied \u2014 paste it anywhere';
+      btn.classList.add('is-done');
       setTimeout(() => {
-        btn.innerHTML = originalText;
-        btn.style.background = '';
-        btn.style.color = '';
-        btn.style.borderColor = '';
+        btn.textContent = 'Copy as prompt';
+        btn.classList.remove('is-done');
       }, 2500);
     } catch (err) {
       const textArea = document.createElement('textarea');
@@ -183,19 +181,19 @@ function initModalEvents() {
 
     if (!deleteConfirmPending) {
       deleteConfirmPending = true;
-      const original = btn.innerHTML;
-      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Click again to confirm`;
-      btn.style.borderColor = 'rgba(239, 68, 68, 0.8)';
-      btn.style.background = 'rgba(239, 68, 68, 0.12)';
+      const original = btn.textContent;
+      btn.textContent = 'Click again to delete for good';
+      btn.classList.add('is-armed');
       deleteConfirmTimer = setTimeout(() => {
         deleteConfirmPending = false;
-        btn.innerHTML = original;
-        btn.style.borderColor = '';
-        btn.style.background = '';
+        btn.textContent = original;
+        btn.classList.remove('is-armed');
       }, 3000);
     } else {
       clearTimeout(deleteConfirmTimer);
       deleteConfirmPending = false;
+      btn.textContent = 'Delete this job';
+      btn.classList.remove('is-armed');
       await window.JobStorage.deleteJob(currentJobId);
       closeModal();
       renderBoard();

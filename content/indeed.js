@@ -103,11 +103,11 @@
     if (!pill) {
       pill = document.createElement('div');
       pill.id = 'jt-indicator';
-      pill.style.cssText = 'position:fixed;bottom:16px;right:16px;z-index:999999;padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.25);transition:opacity 0.4s ease;pointer-events:none;';
+      pill.style.cssText = 'position:fixed;bottom:16px;right:16px;z-index:999999;padding:8px 14px;border-radius:3px;font-size:13px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,0.2);transition:opacity 0.4s ease;pointer-events:none;';
       document.body.appendChild(pill);
     }
-    const colors = { success: '#10b981', info: '#3b82f6', warning: '#f59e0b', error: '#ef4444' };
-    pill.style.background = colors[status] || '#3b82f6';
+    const colors = { success: '#1d7148', info: '#111316', warning: '#7a5c00', error: '#b42318' };
+    pill.style.background = colors[status] || '#111316';
     pill.textContent = label;
     pill.style.opacity = '1';
     setTimeout(() => { pill.style.opacity = '0'; }, 3500);

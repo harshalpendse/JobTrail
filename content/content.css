@@ -1,8 +1,8 @@
 /* content/content.css — Styles for injected UI on job sites */
 :root {
-  --jt-success-bg: rgba(16, 185, 129, 0.1);
-  --jt-success-border: #34d399;
-  --jt-success-text: #065f46;
+  --jt-success-bg: rgba(29, 113, 72, 0.08);
+  --jt-success-border: #1d7148;
+  --jt-success-text: #1d7148;
   --jt-tracked-bg: transparent;
   --jt-tracked-border: #cbd5e1;
   --jt-tracked-text: #475569;
@@ -139,7 +139,7 @@
   bottom: 24px !important;
   right: 24px !important;
   padding: 12px 20px !important;
-  border-radius: 10px !important;
+  border-radius: 3px !important;
   font-size: 13px !important;
   font-weight: 500 !important;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
@@ -158,25 +158,25 @@
 }
 
 .jt-toast-info {
-  background: #1e293b !important;
-  color: #f1f5f9 !important;
-  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+  background: #111316 !important;
+  color: #f4f5f6 !important;
+  border: 1px solid #2a2e33 !important;
 }
 
 .jt-toast-warning {
-  background: #451a03 !important;
-  color: #fef3c7 !important;
-  border: 1px solid rgba(251, 191, 36, 0.4) !important;
+  background: #231d06 !important;
+  color: #fbefb8 !important;
+  border: 1px solid #7a5c00 !important;
 }
 
 .jt-toast-error {
-  background: #450a0a !important;
-  color: #fecaca !important;
-  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+  background: #2a1211 !important;
+  color: #f8d4d0 !important;
+  border: 1px solid #b42318 !important;
 }
 
 .jt-toast-success {
-  background: #052e16 !important;
-  color: #bbf7d0 !important;
-  border: 1px solid rgba(34, 197, 94, 0.4) !important;
+  background: #0f2019 !important;
+  color: #cfe9db !important;
+  border: 1px solid #1d7148 !important;
 }

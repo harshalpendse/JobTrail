@@ -42,17 +42,17 @@ async function renderBoard() {
     // Build the contextual action signal tag
     let actionSignal = '';
     if (displayStatus === 'Applied') {
-      actionSignal = `<span class="op-signal wait">Wait ${7 - daysOld}d</span>`;
+      actionSignal = `<span class="op-signal wait">follow up in ${7 - daysOld}d</span>`;
     } else if (displayStatus === 'Follow-up') {
-      actionSignal = `<span class="op-signal urgent">Send Follow-up</span>`;
+      actionSignal = `<span class="op-signal urgent">\u2192 send a follow-up</span>`;
     } else if (displayStatus === 'Interview') {
-      actionSignal = `<span class="op-signal prep">Prep & Schedule</span>`;
+      actionSignal = `<span class="op-signal prep">\u2192 prep &amp; schedule</span>`;
     } else if (displayStatus === 'Offer') {
-      actionSignal = `<span class="op-signal win">Review Offer</span>`;
+      actionSignal = `<span class="op-signal win">\u2192 review the offer</span>`;
     } else if (displayStatus === 'Ghosted') {
-      actionSignal = `<span class="op-signal terminal">No Response</span>`;
+      actionSignal = `<span class="op-signal terminal">no reply</span>`;
     } else if (displayStatus === 'Rejected') {
-      actionSignal = `<span class="op-signal terminal">Closed</span>`;
+      actionSignal = `<span class="op-signal terminal">closed</span>`;
     }
 
     const card = document.createElement('div');
@@ -62,15 +62,14 @@ async function renderBoard() {
 
     card.innerHTML = `
       <div class="card-header">
-        <h4 class="card-title">${job.jobTitle || 'Unknown Role'}</h4>
         <span class="source-tag">${job.source || 'Manual'}</span>
+        <span class="card-age" title="Days since you applied">day ${daysOld}</span>
       </div>
+      <h4 class="card-title">${job.jobTitle || 'Unknown Role'}</h4>
       <div class="card-company">${cleanCompany}</div>
       ${job.location ? `<div class="card-location">${job.location}</div>` : ''}
       <div class="card-meta">
-        <div class="card-meta-left">
-          ${actionSignal}
-        </div>
+        ${actionSignal}
         ${job.ctc || job.salary ? `<span class="salary-tag">${job.ctc || job.salary}</span>` : ''}
       </div>
     `;
