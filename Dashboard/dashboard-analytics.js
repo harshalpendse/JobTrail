@@ -15,6 +15,8 @@
  */
 
 async function renderAnalytics() {
+  // Canvas text needs the bundled mono loaded before the first draw
+  await document.fonts.ready;
   const analytics = await window.JobStorage.getAnalytics();
 
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
@@ -53,7 +55,7 @@ function renderVelocityChart(weeklyApps) {
   const ink3 = themeColor('--ink-3');
   const rule = themeColor('--rule');
   const mark = themeColor('--mark-fill');
-  const mono = '11px ui-monospace, "SF Mono", Menlo, Consolas, monospace';
+  const mono = `11px ${themeColor('--mono')}`;
 
   ctx.clearRect(0, 0, W, H);
 
