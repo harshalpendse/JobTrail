@@ -1,27 +1,22 @@
 # JobTrail
 
-**A privacy-first, local-only Chrome Extension to automatically track your job applications.**
-
-JobTrail takes the manual work out of your job search. Whenever you click "Apply" on LinkedIn, Indeed, or Naukri, JobTrail seamlessly intercepts the application, scrapes the job details, and organizes them in a beautiful Kanban dashboard right inside your browser. 
-
-No more messy spreadsheets, and no more forgetting what salary you applied for.
-
-## ✨ Features
-
-- **🪄 Auto-Tracking**: Automatically detects when you apply for a job on **LinkedIn, Indeed, or Naukri**.
-- **📋 Kanban Dashboard**: Manage your application pipeline with drag-and-drop columns (Applied, Follow-up, Interview, Offer, Ghosted, Rejected).
-- **📊 Analytics Engine**: Visualize your application velocity, response rates, and pipeline funnel using built-in charts (no charting library).
-- **📱 Triage Center Popup**: A quick-access extension popup that highlights jobs needing immediate attention (like follow-ups and interviews).
-- **🤖 AI Context Generator**: A one-click button in the job details modal to generate a structured prompt loaded with the job description and your notes—ready to paste into ChatGPT/Claude for tailored cover letters and interview prep.
-- **🔒 100% Privacy-First & Local-Only**: 
-  - Zero accounts or logins required.
-  - Zero network requests to external servers.
-  - Zero telemetry.
-  - All your data is stored locally on your device in `chrome.storage.local`.
-
-## 📸 Screenshots
+A Chrome extension that keeps a log of the jobs you apply to on LinkedIn, Indeed and Naukri, and tells you when it's time to follow up. Everything stays in your browser.
 
 ![The board: jobs sorted into Applied, Follow up, Interviewing, Offers, Ghosted and Rejected](docs/screenshots/board.png)
+
+## What it does
+
+When you click **Apply** on a job page, JobTrail saves the role, company, location, salary, the full description and a link back to the posting. A small note in the corner of the page confirms it. If you've already saved the same job from another site, it tells you.
+
+From there:
+
+- **Board.** Jobs sit in six columns: Applied, Follow up, Interviewing, Offers, Ghosted and Rejected. Drag a card to change its status. Each card shows how many days ago you applied and what to do next.
+- **Follow-up nudges.** A job that's been in Applied for 7 days moves to Follow up on its own. Twice a day JobTrail checks, and sends a desktop notification if anything needs you.
+- **Popup.** Click the toolbar icon to see the few jobs to chase or prepare for today.
+- **Job detail.** Keep notes, the resume version you sent and your expected CTC next to the saved description, with a dated history of status changes.
+- **Copy as prompt.** Copies the role, your notes and the description as one block of text, to paste into ChatGPT or Claude when writing a cover letter or preparing for an interview.
+- **Numbers.** Applications per week, where your open applications stand, which sites they came from, and the companies you apply to most.
+- **Export and import.** Back up everything to a JSON file, or move it to another browser.
 
 <p align="center">
   <img src="docs/screenshots/job-detail.png" alt="Job detail with history, description and your notes" width="64%" />
@@ -33,34 +28,41 @@ No more messy spreadsheets, and no more forgetting what salary you applied for.
 
 <sub>Screenshots use sample data. The UI follows your system's light or dark setting.</sub>
 
-## 🚀 Installation 
+## Your data
 
-Since this is an unpacked open-source extension, you can install it directly in Developer Mode:
+Jobs are stored in `chrome.storage.local` on your computer. There's no account, no server and no analytics, and the extension doesn't send your data anywhere. Even the fonts are bundled, so opening the board makes no network requests.
 
-1. Download or clone this repository to your local machine:
+It asks for these permissions:
+
+| Permission | Why |
+| --- | --- |
+| Access to linkedin.com, indeed.com, naukri.com | To notice the Apply click and read the job details from the page |
+| `storage` | To save your jobs locally |
+| `alarms`, `notifications` | For the twice-daily follow-up check |
+
+## Install
+
+JobTrail isn't on the Chrome Web Store yet, so you load it yourself:
+
+1. Clone the repository, or download it as a ZIP and unzip it:
    ```bash
-   git clone [https://github.com/hrshl21/JobTrail.git](https://github.com/hrshl21/JobTrail.git)
+   git clone https://github.com/harshalpendse/JobTrail.git
    ```
-2. Open Google Chrome and navigate to `chrome://extensions/`.
-3. Enable **Developer mode** using the toggle switch in the top right corner.
-4. Click the **Load unpacked** button in the top left.
-5. Select the `job-tracker-extension` folder that you just cloned.
-6. Look for the JobTrail icon in your extensions menu, pin it, and start applying!   
+2. Open `chrome://extensions` in Chrome.
+3. Turn on **Developer mode** (top right).
+4. Click **Load unpacked** and select the `JobTrail` folder.
+5. Pin JobTrail from the extensions menu, then apply to a job as usual.
 
-## 🛠️ Architecture
+To update, pull the latest code and click the reload icon on JobTrail's card in `chrome://extensions`.
 
-*For full technical details, please see [ARCHITECTURE.md](ARCHITECTURE.md).*
+## How it's built
 
-JobTrail is a purely client-side application utilizing:
-- **Manifest V3**
-- **Content Scripts** for DOM parsing, MutationObservers, and scraping on job portals.
-- **Background Service Worker** to handle reminders and desktop notifications.
-- **Vanilla structure** (HTML/CSS/JS) with no external bloated frameworks or charting libraries.
+Plain HTML, CSS and JavaScript on Manifest V3, with no frameworks or chart libraries. Content scripts watch for Apply clicks on each site, a background service worker runs the follow-up check, and the board and popup read straight from local storage. [ARCHITECTURE.md](ARCHITECTURE.md) has the details.
 
-## 🤝 Contributing
+## Contributing
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/hrshl21/JobTrail/issues). 
+Bug reports and pull requests are welcome on the [issues page](https://github.com/harshalpendse/JobTrail/issues). Job sites change their markup often, so if JobTrail stops catching applications on one of them, please open an issue with the job URL.
 
-## 📜 License
+## License
 
-This project is open-source and available under the [MIT License](LICENSE).
+MIT.
